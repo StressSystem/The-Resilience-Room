@@ -153,33 +153,7 @@ h3 { font-size: 1.1rem; margin-bottom: 6px; }
 
 /* --- Breathing Tool --- */
 .breathing-section { margin: 20px 0 10px; }
-
-.tool-row {
-  display: grid;
-  gap: 10px;
-  justify-items: center;
-  margin-bottom: 10px;
-}
-
-.tool-title {
-  margin: 0;
-}
-
-.tool-label {
-  font-weight: 700;
-  opacity: 0.95;
-}
-
-.tool-select {
-  width: min(360px, 100%);
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: none;
-  outline: none;
-  font-size: 1rem;
-  background: rgba(255,255,255,0.92);
-  color: #333;
-}
+.tool-title { margin: 0; }
 
 .circle {
   width: 90px;
