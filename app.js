@@ -427,3 +427,78 @@
     setMsg("Account created! You can log in now.");
   });
 })();
+
+/* ==========================
+   Auth UI (nav + profile page)
+========================== */
+(function authUi() {
+  const sb = window.supabaseClient;
+  if (!sb) return;
+
+  const navSlot = document.getElementById("auth-nav-slot");
+
+  async function refreshNav() {
+    if (!navSlot) return;
+
+    const { data: { session } } = await sb.auth.getSession();
+
+    if (!session) {
+      navSlot.innerHTML = `<a class="nav-link" href="login.html">Login</a>`;
+      return;
+    }
+
+    const email = session.user?.email || "Logged in";
+    navSlot.innerHTML = `
+      <a class="nav-link" href="profile.html">${email}</a>
+      <a class="nav-link" href="#" id="nav-logout">Logout</a>
+    `;
+
+    const logoutLink = document.getElementById("nav-logout");
+    logoutLink?.addEventListener("click", async (e) => {
+      e.preventDefault();
+      await sb.auth.signOut();
+      window.location.href = "index.html";
+    });
+  }
+
+  // Profile page wiring (if those elements exist)
+  async function refreshProfilePage() {
+    const profilePanel = document.getElementById("profile-panel");
+    const loggedOutPanel = document.getElementById("profile-logged-out");
+    if (!profilePanel || !loggedOutPanel) return;
+
+    const emailEl = document.getElementById("profile-email");
+    const idEl = document.getElementById("profile-id");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    const { data: { session } } = await sb.auth.getSession();
+
+    if (!session) {
+      profilePanel.hidden = true;
+      loggedOutPanel.hidden = false;
+      return;
+    }
+
+    loggedOutPanel.hidden = true;
+    profilePanel.hidden = false;
+
+    if (emailEl) emailEl.textContent = session.user?.email || "";
+    if (idEl) idEl.textContent = session.user?.id || "";
+
+    logoutBtn?.addEventListener("click", async () => {
+      await sb.auth.signOut();
+      window.location.href = "index.html";
+    });
+  }
+
+  // Run once on load
+  refreshNav();
+  refreshProfilePage();
+
+  // Keep UI in sync if auth state changes (login/logout in another tab)
+  sb.auth.onAuthStateChange(() => {
+    refreshNav();
+    refreshProfilePage();
+  });
+})();
+
