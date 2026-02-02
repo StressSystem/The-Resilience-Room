@@ -21,50 +21,26 @@
             <a href="services.html">Our Services</a>
           </div>
         </li>
-
         <li id="auth-nav-slot"><a class="nav-link" href="login.html">Login</a></li>
       </ul>
     </nav>
 
     <header>
       <h1>Your Profile</h1>
-      <p class="muted" id="profile-subtitle">Your account details.</p>
+      <p class="muted">Your account details.</p>
     </header>
 
     <section class="info-card">
 
-      <!-- Logged IN -->
       <div class="panel" id="profile-panel" hidden>
-        <h2 style="margin-bottom: 8px;">Welcome back 👋</h2>
-        <p class="muted" style="margin-bottom: 14px;">
-          You’re signed in and ready to go.
-        </p>
+        <h2>Logged in ✅</h2>
 
-        <div class="profile-grid">
-          <div class="profile-card">
-            <h3>Account</h3>
-            <p><strong>Email:</strong> <span id="profile-email"></span></p>
-            <p><strong>User ID:</strong> <span id="profile-id"></span></p>
-            <p><strong>Status:</strong> <span class="tag tag-good">Logged in</span></p>
-          </div>
-
-          <div class="profile-card">
-            <h3>Quick actions</h3>
-            <div class="cta-row" style="justify-content: flex-start;">
-              <a href="index.html" class="btn btn-small">Home</a>
-              <a href="quiz.html" class="btn btn-small btn-outline">Quiz</a>
-              <button class="btn btn-small btn-outline" id="logout-btn" type="button">Logout</button>
-            </div>
-
-            <p class="hint">
-              Tip: Your profile will later save quiz results + progress.
-            </p>
-          </div>
-        </div>
+        <p><strong>Email:</strong> <span id="profile-email"></span></p>
+        <p><strong>User ID:</strong> <span id="profile-id"></span></p>
 
         <div class="panel" style="margin-top: 14px;">
-          <h3>Profile settings</h3>
-          <p class="muted">Optional: add a display name (we can save this next).</p>
+          <h3>Display name</h3>
+          <p class="muted">This saves to your account.</p>
 
           <div class="form-group" style="margin-top: 10px;">
             <label for="display-name">Display name</label>
@@ -73,20 +49,17 @@
           </div>
 
           <div class="cta-row" style="justify-content: flex-start;">
-            <button class="btn btn-small" id="save-display-btn" type="button">Save (local for now)</button>
+            <button class="btn btn-small" id="save-display-btn" type="button">Save</button>
             <button class="btn btn-small btn-outline" id="clear-display-btn" type="button">Clear</button>
           </div>
         </div>
 
-        <div class="panel" style="margin-top: 14px;">
-          <h3>Saved progress</h3>
-          <p class="muted">
-            Coming soon: saved quiz results, streaks, and recommended tools.
-          </p>
+        <div class="cta-row">
+          <a href="quiz.html" class="btn btn-small">Take the Quiz</a>
+          <button class="btn btn-outline btn-small" id="logout-btn" type="button">Logout</button>
         </div>
       </div>
 
-      <!-- Logged OUT -->
       <div class="panel" id="profile-logged-out" hidden>
         <h2>You’re not logged in</h2>
         <p class="muted">Log in to view your profile.</p>
@@ -100,11 +73,10 @@
     </footer>
   </div>
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabaseClient.js"></script>
+  <!-- Supabase + App -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
+  <script defer src="supabaseClient.js?v=100"></script>
+  <script defer src="app.js?v=100"></script>
 
-  <!-- App -->
-  <script src="app.js"></script>
 </body>
 </html>
