@@ -22,35 +22,77 @@
           </div>
         </li>
 
-        <!-- Auth slot -->
-        <li id="auth-nav-slot">
-          <a class="nav-link" href="login.html">Login</a>
-        </li>
+        <li id="auth-nav-slot"><a class="nav-link" href="login.html">Login</a></li>
       </ul>
     </nav>
 
     <header>
       <h1>Your Profile</h1>
-      <p class="muted">Your account details.</p>
+      <p class="muted" id="profile-subtitle">Your account details.</p>
     </header>
 
     <section class="info-card">
-      <div class="panel" id="profile-panel" hidden>
-        <h2>Logged in ✅</h2>
-        <p><strong>Email:</strong> <span id="profile-email"></span></p>
-        <p><strong>User ID:</strong> <span id="profile-id"></span></p>
 
-        <div class="cta-row">
-          <a href="quiz.html" class="btn btn-small">Take the Quiz</a>
-          <button class="btn btn-outline btn-small" id="logout-btn" type="button">Logout</button>
+      <!-- Logged IN -->
+      <div class="panel" id="profile-panel" hidden>
+        <h2 style="margin-bottom: 8px;">Welcome back 👋</h2>
+        <p class="muted" style="margin-bottom: 14px;">
+          You’re signed in and ready to go.
+        </p>
+
+        <div class="profile-grid">
+          <div class="profile-card">
+            <h3>Account</h3>
+            <p><strong>Email:</strong> <span id="profile-email"></span></p>
+            <p><strong>User ID:</strong> <span id="profile-id"></span></p>
+            <p><strong>Status:</strong> <span class="tag tag-good">Logged in</span></p>
+          </div>
+
+          <div class="profile-card">
+            <h3>Quick actions</h3>
+            <div class="cta-row" style="justify-content: flex-start;">
+              <a href="index.html" class="btn btn-small">Home</a>
+              <a href="quiz.html" class="btn btn-small btn-outline">Quiz</a>
+              <button class="btn btn-small btn-outline" id="logout-btn" type="button">Logout</button>
+            </div>
+
+            <p class="hint">
+              Tip: Your profile will later save quiz results + progress.
+            </p>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top: 14px;">
+          <h3>Profile settings</h3>
+          <p class="muted">Optional: add a display name (we can save this next).</p>
+
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="display-name">Display name</label>
+            <input id="display-name" type="text" placeholder="e.g. Miles" />
+            <p class="hint" id="display-save-msg"></p>
+          </div>
+
+          <div class="cta-row" style="justify-content: flex-start;">
+            <button class="btn btn-small" id="save-display-btn" type="button">Save (local for now)</button>
+            <button class="btn btn-small btn-outline" id="clear-display-btn" type="button">Clear</button>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top: 14px;">
+          <h3>Saved progress</h3>
+          <p class="muted">
+            Coming soon: saved quiz results, streaks, and recommended tools.
+          </p>
         </div>
       </div>
 
+      <!-- Logged OUT -->
       <div class="panel" id="profile-logged-out" hidden>
         <h2>You’re not logged in</h2>
         <p class="muted">Log in to view your profile.</p>
         <a class="btn" href="login.html">Go to Login</a>
       </div>
+
     </section>
 
     <footer>
