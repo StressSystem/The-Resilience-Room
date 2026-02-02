@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Profile - The Resilience Room</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body data-page="profile">
+  <div class="glass-container">
+
+    <nav>
+      <ul>
+        <li><a class="nav-link" href="index.html">Home</a></li>
+        <li><a class="nav-link" href="quiz.html">Quiz</a></li>
+        <li class="dropdown">
+          <a class="nav-link dropbtn" href="javascript:void(0)">Info</a>
+          <div class="dropdown-content">
+            <a href="mental_health.html">Mental Health</a>
+            <a href="services.html">Our Services</a>
+          </div>
+        </li>
+
+        <!-- Auth slot -->
+        <li id="auth-nav-slot">
+          <a class="nav-link" href="login.html">Login</a>
+        </li>
+      </ul>
+    </nav>
+
+    <header>
+      <h1>Your Profile</h1>
+      <p class="muted">Your account details.</p>
+    </header>
+
+    <section class="info-card">
+      <div class="panel" id="profile-panel" hidden>
+        <h2>Logged in ✅</h2>
+        <p><strong>Email:</strong> <span id="profile-email"></span></p>
+        <p><strong>User ID:</strong> <span id="profile-id"></span></p>
+
+        <div class="cta-row">
+          <a href="quiz.html" class="btn btn-small">Take the Quiz</a>
+          <button class="btn btn-outline btn-small" id="logout-btn" type="button">Logout</button>
+        </div>
+      </div>
+
+      <div class="panel" id="profile-logged-out" hidden>
+        <h2>You’re not logged in</h2>
+        <p class="muted">Log in to view your profile.</p>
+        <a class="btn" href="login.html">Go to Login</a>
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; 2026 Miles Pirodon</p>
+    </footer>
+  </div>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabaseClient.js"></script>
+
+  <!-- App -->
+  <script src="app.js"></script>
+</body>
+</html>
