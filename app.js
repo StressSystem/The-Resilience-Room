@@ -430,12 +430,39 @@
 
 /* ==========================
    Auth UI (nav + profile page)
+   + profiles table (display_name)
 ========================== */
 (function authUi() {
   const sb = window.supabaseClient;
   if (!sb) return;
 
   const navSlot = document.getElementById("auth-nav-slot");
+
+  async function ensureProfileRow(user) {
+    // Creates/updates a profile row for the logged in user (safe to call often)
+    await sb.from("profiles").upsert({
+      id: user.id,
+      email: user.email || null
+    });
+  }
+
+  async function getMyProfile() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return null;
+
+    const { data, error } = await sb
+      .from("profiles")
+      .select("display_name, email")
+      .eq("id", session.user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.warn("Profile fetch error:", error.message);
+      return { display_name: null, email: session.user.email || null };
+    }
+
+    return data || { display_name: null, email: session.user.email || null };
+  }
 
   async function refreshNav() {
     if (!navSlot) return;
@@ -446,6 +473,125 @@
       navSlot.innerHTML = `<a class="nav-link" href="login.html">Login</a>`;
       return;
     }
+
+    // Make sure profile exists
+    await ensureProfileRow(session.user);
+
+    // Fetch profile to get display name
+    const profile = await getMyProfile();
+    const label =
+      (profile && profile.display_name && profile.display_name.trim()) ||
+      session.user.email ||
+      "Profile";
+
+    navSlot.innerHTML = `
+      <a class="nav-link" href="profile.html">${label}</a>
+      <a class="nav-link" href="#" id="nav-logout">Logout</a>
+    `;
+
+    const logoutLink = document.getElementById("nav-logout");
+    logoutLink?.addEventListener("click", async (e) => {
+      e.preventDefault();
+      await sb.auth.signOut();
+      window.location.href = "index.html";
+    });
+  }
+
+  async function refreshProfilePage() {
+    const profilePanel = document.getElementById("profile-panel");
+    const loggedOutPanel = document.getElementById("profile-logged-out");
+    if (!profilePanel || !loggedOutPanel) return;
+
+    const emailEl = document.getElementById("profile-email");
+    const idEl = document.getElementById("profile-id");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    const displayInput = document.getElementById("display-name");
+    const saveBtn = document.getElementById("save-display-btn");
+    const clearBtn = document.getElementById("clear-display-btn");
+    const msg = document.getElementById("display-save-msg");
+
+    const { data: { session } } = await sb.auth.getSession();
+
+    if (!session) {
+      profilePanel.hidden = true;
+      loggedOutPanel.hidden = false;
+      return;
+    }
+
+    loggedOutPanel.hidden = true;
+    profilePanel.hidden = false;
+
+    // Ensure profile row exists
+    await ensureProfileRow(session.user);
+
+    // Fill basic info
+    if (emailEl) emailEl.textContent = session.user?.email || "";
+    if (idEl) idEl.textContent = session.user?.id || "";
+
+    // Load profile from DB
+    const profile = await getMyProfile();
+    if (displayInput) displayInput.value = profile?.display_name || "";
+
+    function setMsg(t) {
+      if (msg) msg.textContent = t || "";
+    }
+
+    saveBtn?.addEventListener("click", async () => {
+      const name = (displayInput?.value || "").trim();
+
+      setMsg("Saving...");
+      const { error } = await sb.from("profiles").upsert({
+        id: session.user.id,
+        email: session.user.email || null,
+        display_name: name || null
+      });
+
+      if (error) {
+        setMsg(error.message);
+        return;
+      }
+
+      setMsg("Saved ✅");
+      await refreshNav(); // update navbar label
+    });
+
+    clearBtn?.addEventListener("click", async () => {
+      if (displayInput) displayInput.value = "";
+      setMsg("Clearing...");
+
+      const { error } = await sb.from("profiles").upsert({
+        id: session.user.id,
+        email: session.user.email || null,
+        display_name: null
+      });
+
+      if (error) {
+        setMsg(error.message);
+        return;
+      }
+
+      setMsg("Cleared ✅");
+      await refreshNav();
+    });
+
+    logoutBtn?.addEventListener("click", async () => {
+      await sb.auth.signOut();
+      window.location.href = "index.html";
+    });
+  }
+
+  // Run once on load
+  refreshNav();
+  refreshProfilePage();
+
+  // Keep UI in sync if auth state changes
+  sb.auth.onAuthStateChange(() => {
+    refreshNav();
+    refreshProfilePage();
+  });
+})();
+
 
     const email = session.user?.email || "Logged in";
     navSlot.innerHTML = `
@@ -532,4 +678,5 @@
     setMsg("Cleared ✅");
   });
 })();
+
 
