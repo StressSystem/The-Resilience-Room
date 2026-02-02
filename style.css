@@ -382,3 +382,37 @@ h3 { font-size: 1.1rem; margin-bottom: 6px; }
 }
 
 footer { margin-top: 30px; font-size: 0.85rem; opacity: 0.85; }
+
+/* --- Profile layout --- */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.profile-card {
+  background: rgba(255,255,255,0.10);
+  border-radius: 16px;
+  padding: 14px;
+  text-align: left;
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+.tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin-left: 6px;
+}
+
+.tag-good {
+  background: rgba(35, 213, 171, 0.25);
+  border: 1px solid rgba(35, 213, 171, 0.45);
+}
+
+@media (max-width: 640px) {
+  .profile-grid { grid-template-columns: 1fr; }
+}
