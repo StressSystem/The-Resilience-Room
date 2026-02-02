@@ -416,3 +416,57 @@ footer { margin-top: 30px; font-size: 0.85rem; opacity: 0.85; }
 @media (max-width: 640px) {
   .profile-grid { grid-template-columns: 1fr; }
 }
+
+/* ==========================
+   Breathing tool overlap fix
+   - smaller circle on small screens
+   - adds spacing so text never overlaps
+========================== */
+
+/* Make the breathing section stack nicely */
+.breathing-section{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px; /* space between title, circle, text */
+}
+
+/* Default circle size (desktop) */
+.circle{
+  width: 80px;
+  height: 80px;
+  margin: 6px auto 0; /* remove big bottom margin so it doesn't push into text */
+}
+
+/* Give the text its own spacing */
+.breath-text{
+  margin-top: 4px;
+  line-height: 1.2;
+}
+
+/* Smaller screens: shrink more + reduce scale */
+@media (max-width: 480px){
+  .circle{
+    width: 64px;
+    height: 64px;
+  }
+
+  /* reduce the pulse so it doesn’t grow into the title/text */
+  @keyframes breathe {
+    0%   { transform: scale(1); opacity: 0.4; }
+    50%  { transform: scale(1.35); opacity: 0.9; }
+    100% { transform: scale(1); opacity: 0.4; }
+  }
+}
+
+/* Super tiny screens */
+@media (max-width: 360px){
+  .circle{
+    width: 56px;
+    height: 56px;
+  }
+  .breath-text{
+    font-size: 1rem;
+  }
+}
+
