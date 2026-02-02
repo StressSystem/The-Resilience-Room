@@ -21,6 +21,8 @@
             <a href="services.html">Our Services</a>
           </div>
         </li>
+
+        <!-- Auth slot -->
         <li id="auth-nav-slot"><a class="nav-link" href="login.html">Login</a></li>
       </ul>
     </nav>
@@ -83,14 +85,25 @@
     </footer>
   </div>
 
-  <!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabaseClient.js"></script>
+  <!-- Supabase (pinned version + defer) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
 
-<!-- App -->
-<script src="app.js"></script>
-  
+  <!-- Your client + app (cache-busted to avoid GitHub Pages caching) -->
+  <script defer src="supabaseClient.js?v=100"></script>
+  <script defer src="app.js?v=100"></script>
+
+  <!-- Fallback: if supabase CDN fails, load from an alternate CDN -->
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      // If supabase isn't defined, the CDN didn't load
+      if (typeof window.supabase === "undefined") {
+        const s = document.createElement("script");
+        s.src = "https://unpkg.com/@supabase/supabase-js@2.49.1/dist/umd/supabase.js";
+        s.onload = () => console.log("Loaded Supabase from fallback CDN");
+        document.head.appendChild(s);
+      }
+    });
+  </script>
+
 </body>
 </html>
-
-
