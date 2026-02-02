@@ -1,61 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login or Signup</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login or Signup</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body data-page="login">
-    <div class="glass-container">
-        <header>
-            <h1>Join the Resilience Room</h1>
-            <p id="form-title">Login to your account.</p>
-        </header>
+  <div class="glass-container">
 
-        <section class="info-card">
-            <!-- Login Form -->
-            <form id="login-form" action="#" method="POST">
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button type="submit" class="btn">Login</button>
-            </form>
+    <nav>
+      <ul>
+        <li><a class="nav-link" href="index.html">Home</a></li>
+        <li><a class="nav-link" href="quiz.html">Quiz</a></li>
+        <li class="dropdown">
+          <a class="nav-link dropbtn" href="javascript:void(0)">Info</a>
+          <div class="dropdown-content">
+            <a href="mental_health.html">Mental Health</a>
+            <a href="services.html">Our Services</a>
+          </div>
+        </li>
+        <li id="auth-nav-slot"><a class="nav-link" href="login.html">Login</a></li>
+      </ul>
+    </nav>
 
-            <!-- Signup Form (Hidden initially) -->
-            <form id="signup-form" action="#" method="POST" style="display: none;">
-                <div class="form-group">
-                    <label for="new-email">Email Address</label>
-                    <input type="email" id="new-email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="new-password">Create Password</label>
-                    <input type="password" id="new-password" name="password" required>
-                </div>
-                <button type="submit" class="btn">Sign Up</button>
-            </form>
+    <header>
+      <h1>Join the Resilience Room</h1>
+      <p id="form-title">Login to your account.</p>
+    </header>
 
-            <div class="form-actions">
-                <a href="#" id="toggle-form">Don't have an account? Sign Up</a>
-            </div>
-        </section>
+    <section class="info-card">
+      <!-- Login Form -->
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn">Login</button>
+      </form>
 
-        <footer>
-            <p>&copy; 2026 Miles Pirodon</p>
-        </footer>
-    </div>
+      <!-- Signup Form -->
+      <form id="signup-form" style="display: none;">
+        <div class="form-group">
+          <label for="new-email">Email Address</label>
+          <input type="email" id="new-email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="new-password">Create Password</label>
+          <input type="password" id="new-password" name="password" required>
+        </div>
+        <button type="submit" class="btn">Sign Up</button>
+      </form>
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabaseClient.js"></script>
+      <div class="form-actions">
+        <a href="#" id="toggle-form">Don't have an account? Sign Up</a>
+      </div>
+    </section>
 
-    <!-- Your app -->
-    <script src="app.js"></script>
+    <footer>
+      <p>&copy; 2026 Miles Pirodon</p>
+    </footer>
+  </div>
+
+  <!-- Supabase + App -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
+  <script defer src="supabaseClient.js?v=100"></script>
+  <script defer src="app.js?v=100"></script>
+
 </body>
 </html>
