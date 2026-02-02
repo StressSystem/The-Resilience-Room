@@ -14,6 +14,7 @@
     if (page === "mental" && href.includes("mental_health.html")) a.classList.add("active");
     if (page === "services" && href.includes("services.html")) a.classList.add("active");
     if (page === "login" && href.includes("login.html")) a.classList.add("active");
+    if (page === "profile" && href.includes("profile.html")) a.classList.add("active");
   });
 })();
 
@@ -31,7 +32,6 @@
   let timer = null;
   let phaseIndex = 0;
 
-  // simple steady loop (4 in / 4 out)
   const phases = [
     { label: "Breathe In...", seconds: 4 },
     { label: "Breathe Out...", seconds: 4 }
@@ -361,18 +361,16 @@
 
 /* ==========================
    Supabase auth (login.html)
-   - keeps your UI the same
    - makes forms actually work
 ========================== */
 (function supabaseAuth() {
-  // Only runs on the login page where the forms exist
   const loginForm = document.getElementById("login-form");
   const signupForm = document.getElementById("signup-form");
   if (!loginForm || !signupForm) return;
 
   const sb = window.supabaseClient;
   if (!sb) {
-    console.warn("Supabase client not found. Make sure supabase-js + supabaseClient.js are loaded on login.html");
+    console.warn("Supabase client not found. Make sure supabase-js + supabaseClient.js are loaded on this page.");
     return;
   }
 
@@ -429,58 +427,60 @@
 })();
 
 /* ==========================
-   Auth UI (nav + profile page)
-   + profiles table (display_name)
+   Auth UI + Profiles (navbar + profile page)
+   - creates profile row automatically
+   - saves display_name
 ========================== */
-(function authUi() {
+(function authUiProfiles() {
   const sb = window.supabaseClient;
   if (!sb) return;
 
   const navSlot = document.getElementById("auth-nav-slot");
 
+  async function getSession() {
+    const { data, error } = await sb.auth.getSession();
+    if (error) return null;
+    return data.session || null;
+  }
+
   async function ensureProfileRow(user) {
-    // Creates/updates a profile row for the logged in user (safe to call often)
+    // Safe to call repeatedly
     await sb.from("profiles").upsert({
       id: user.id,
       email: user.email || null
     });
   }
 
-  async function getMyProfile() {
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) return null;
-
+  async function fetchMyProfile(userId, fallbackEmail) {
     const { data, error } = await sb
       .from("profiles")
-      .select("display_name, email")
-      .eq("id", session.user.id)
+      .select("display_name,email")
+      .eq("id", userId)
       .maybeSingle();
 
     if (error) {
       console.warn("Profile fetch error:", error.message);
-      return { display_name: null, email: session.user.email || null };
+      return { display_name: null, email: fallbackEmail || null };
     }
 
-    return data || { display_name: null, email: session.user.email || null };
+    return data || { display_name: null, email: fallbackEmail || null };
   }
 
   async function refreshNav() {
     if (!navSlot) return;
 
-    const { data: { session } } = await sb.auth.getSession();
+    const session = await getSession();
 
     if (!session) {
       navSlot.innerHTML = `<a class="nav-link" href="login.html">Login</a>`;
       return;
     }
 
-    // Make sure profile exists
     await ensureProfileRow(session.user);
 
-    // Fetch profile to get display name
-    const profile = await getMyProfile();
+    const profile = await fetchMyProfile(session.user.id, session.user.email);
     const label =
-      (profile && profile.display_name && profile.display_name.trim()) ||
+      (profile.display_name && profile.display_name.trim()) ||
       session.user.email ||
       "Profile";
 
@@ -489,8 +489,7 @@
       <a class="nav-link" href="#" id="nav-logout">Logout</a>
     `;
 
-    const logoutLink = document.getElementById("nav-logout");
-    logoutLink?.addEventListener("click", async (e) => {
+    document.getElementById("nav-logout")?.addEventListener("click", async (e) => {
       e.preventDefault();
       await sb.auth.signOut();
       window.location.href = "index.html";
@@ -511,7 +510,7 @@
     const clearBtn = document.getElementById("clear-display-btn");
     const msg = document.getElementById("display-save-msg");
 
-    const { data: { session } } = await sb.auth.getSession();
+    const session = await getSession();
 
     if (!session) {
       profilePanel.hidden = true;
@@ -522,16 +521,13 @@
     loggedOutPanel.hidden = true;
     profilePanel.hidden = false;
 
-    // Ensure profile row exists
     await ensureProfileRow(session.user);
 
-    // Fill basic info
-    if (emailEl) emailEl.textContent = session.user?.email || "";
-    if (idEl) idEl.textContent = session.user?.id || "";
+    if (emailEl) emailEl.textContent = session.user.email || "";
+    if (idEl) idEl.textContent = session.user.id || "";
 
-    // Load profile from DB
-    const profile = await getMyProfile();
-    if (displayInput) displayInput.value = profile?.display_name || "";
+    const profile = await fetchMyProfile(session.user.id, session.user.email);
+    if (displayInput) displayInput.value = profile.display_name || "";
 
     function setMsg(t) {
       if (msg) msg.textContent = t || "";
@@ -553,7 +549,7 @@
       }
 
       setMsg("Saved ✅");
-      await refreshNav(); // update navbar label
+      await refreshNav();
     });
 
     clearBtn?.addEventListener("click", async () => {
@@ -585,98 +581,9 @@
   refreshNav();
   refreshProfilePage();
 
-  // Keep UI in sync if auth state changes
+  // Keep UI in sync
   sb.auth.onAuthStateChange(() => {
     refreshNav();
     refreshProfilePage();
   });
 })();
-
-
-    const email = session.user?.email || "Logged in";
-    navSlot.innerHTML = `
-      <a class="nav-link" href="profile.html">${email}</a>
-      <a class="nav-link" href="#" id="nav-logout">Logout</a>
-    `;
-
-    const logoutLink = document.getElementById("nav-logout");
-    logoutLink?.addEventListener("click", async (e) => {
-      e.preventDefault();
-      await sb.auth.signOut();
-      window.location.href = "index.html";
-    });
-  }
-
-  // Profile page wiring (if those elements exist)
-  async function refreshProfilePage() {
-    const profilePanel = document.getElementById("profile-panel");
-    const loggedOutPanel = document.getElementById("profile-logged-out");
-    if (!profilePanel || !loggedOutPanel) return;
-
-    const emailEl = document.getElementById("profile-email");
-    const idEl = document.getElementById("profile-id");
-    const logoutBtn = document.getElementById("logout-btn");
-
-    const { data: { session } } = await sb.auth.getSession();
-
-    if (!session) {
-      profilePanel.hidden = true;
-      loggedOutPanel.hidden = false;
-      return;
-    }
-
-    loggedOutPanel.hidden = true;
-    profilePanel.hidden = false;
-
-    if (emailEl) emailEl.textContent = session.user?.email || "";
-    if (idEl) idEl.textContent = session.user?.id || "";
-
-    logoutBtn?.addEventListener("click", async () => {
-      await sb.auth.signOut();
-      window.location.href = "index.html";
-    });
-  }
-
-  // Run once on load
-  refreshNav();
-  refreshProfilePage();
-
-  // Keep UI in sync if auth state changes (login/logout in another tab)
-  sb.auth.onAuthStateChange(() => {
-    refreshNav();
-    refreshProfilePage();
-  });
-})();
-
-/* ==========================
-   Profile page: local display name (optional)
-========================== */
-(function profileLocalName() {
-  const input = document.getElementById("display-name");
-  const saveBtn = document.getElementById("save-display-btn");
-  const clearBtn = document.getElementById("clear-display-btn");
-  const msg = document.getElementById("display-save-msg");
-  if (!input || !saveBtn || !clearBtn) return;
-
-  // Load saved name
-  const saved = localStorage.getItem("rr_display_name");
-  if (saved) input.value = saved;
-
-  function setMsg(t) {
-    if (msg) msg.textContent = t || "";
-  }
-
-  saveBtn.addEventListener("click", () => {
-    const name = input.value.trim();
-    localStorage.setItem("rr_display_name", name);
-    setMsg(name ? "Saved locally ✅" : "Saved (blank) ✅");
-  });
-
-  clearBtn.addEventListener("click", () => {
-    localStorage.removeItem("rr_display_name");
-    input.value = "";
-    setMsg("Cleared ✅");
-  });
-})();
-
-
