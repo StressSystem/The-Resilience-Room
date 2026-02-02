@@ -27,13 +27,16 @@ body {
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
-  padding: 40px;
-  width: 95%;
-  max-width: 720px;
+
+  /* ✅ FIX: scale up on desktop */
+  width: min(95vw, 980px);
+  padding: clamp(24px, 3vw, 48px);
+
   text-align: center;
   color: white;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
+
 
 /* --- Navigation & Dropdown --- */
 nav {
@@ -382,3 +385,4 @@ h3 { font-size: 1.1rem; margin-bottom: 6px; }
 }
 
 footer { margin-top: 30px; font-size: 0.85rem; opacity: 0.85; }
+
