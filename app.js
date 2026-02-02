@@ -502,3 +502,34 @@
   });
 })();
 
+/* ==========================
+   Profile page: local display name (optional)
+========================== */
+(function profileLocalName() {
+  const input = document.getElementById("display-name");
+  const saveBtn = document.getElementById("save-display-btn");
+  const clearBtn = document.getElementById("clear-display-btn");
+  const msg = document.getElementById("display-save-msg");
+  if (!input || !saveBtn || !clearBtn) return;
+
+  // Load saved name
+  const saved = localStorage.getItem("rr_display_name");
+  if (saved) input.value = saved;
+
+  function setMsg(t) {
+    if (msg) msg.textContent = t || "";
+  }
+
+  saveBtn.addEventListener("click", () => {
+    const name = input.value.trim();
+    localStorage.setItem("rr_display_name", name);
+    setMsg(name ? "Saved locally ✅" : "Saved (blank) ✅");
+  });
+
+  clearBtn.addEventListener("click", () => {
+    localStorage.removeItem("rr_display_name");
+    input.value = "";
+    setMsg("Cleared ✅");
+  });
+})();
+
