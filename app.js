@@ -19,49 +19,25 @@
 
 /* ==========================
    Breathing tool (shared)
-   Supports: box, steady, 4-7-8
+   NO dropdown now ✅
 ========================== */
 (function breathingTool() {
   const breathingRoot = document.querySelector("[data-breathing]");
   if (!breathingRoot) return;
 
-  const modeSelect = document.getElementById("breath-mode");
   const breathText = document.getElementById("breath-text");
-
-  if (!modeSelect || !breathText) return;
+  if (!breathText) return;
 
   let timer = null;
   let phaseIndex = 0;
 
-  const patterns = {
-    box: {
-      name: "Box (4–4–4–4)",
-      phases: [
-        { label: "Breathe In...", seconds: 4 },
-        { label: "Hold...", seconds: 4 },
-        { label: "Breathe Out...", seconds: 4 },
-        { label: "Hold...", seconds: 4 }
-      ],
-      animationSeconds: 8
-    },
-    steady: {
-      name: "Steady (4–4)",
-      phases: [
-        { label: "Breathe In...", seconds: 4 },
-        { label: "Breathe Out...", seconds: 4 }
-      ],
-      animationSeconds: 8
-    },
-    "478": {
-      name: "4–7–8",
-      phases: [
-        { label: "Breathe In...", seconds: 4 },
-        { label: "Hold...", seconds: 7 },
-        { label: "Breathe Out...", seconds: 8 }
-      ],
-      animationSeconds: 12
-    }
-  };
+  // simple steady loop (4 in / 4 out)
+  const phases = [
+    { label: "Breathe In...", seconds: 4 },
+    { label: "Breathe Out...", seconds: 4 }
+  ];
+
+  document.documentElement.style.setProperty("--breath-duration", `8s`);
 
   function clearTimer() {
     if (timer) {
@@ -70,32 +46,18 @@
     }
   }
 
-  function setBreathAnimation(seconds) {
-    document.documentElement.style.setProperty("--breath-duration", `${seconds}s`);
+  function nextPhase() {
+    const phase = phases[phaseIndex];
+    breathText.textContent = phase.label;
+
+    timer = setTimeout(() => {
+      phaseIndex = (phaseIndex + 1) % phases.length;
+      nextPhase();
+    }, phase.seconds * 1000);
   }
 
-  function runPattern(key) {
-    clearTimer();
-    phaseIndex = 0;
-
-    const p = patterns[key] || patterns.box;
-    setBreathAnimation(p.animationSeconds);
-
-    function nextPhase() {
-      const phase = p.phases[phaseIndex];
-      breathText.textContent = phase.label;
-
-      timer = setTimeout(() => {
-        phaseIndex = (phaseIndex + 1) % p.phases.length;
-        nextPhase();
-      }, phase.seconds * 1000);
-    }
-
-    nextPhase();
-  }
-
-  modeSelect.addEventListener("change", () => runPattern(modeSelect.value));
-  runPattern(modeSelect.value);
+  clearTimer();
+  nextPhase();
 })();
 
 /* ==========================
@@ -118,7 +80,6 @@
       if (!target) return;
 
       const isOpen = target.hidden === false;
-
       hideAll();
       if (!isOpen) target.hidden = false;
     });
@@ -175,7 +136,7 @@
 })();
 
 /* ==========================
-   Quiz logic (4 questions -> category -> result)
+   Quiz logic (8 questions ✅)
 ========================== */
 (function quizEngine() {
   const quizArea = document.getElementById("quiz-area");
@@ -210,6 +171,38 @@
       ]
     },
     {
+      text: "How has your energy been recently?",
+      options: [
+        { text: "Pretty normal", scores: { routine: 2 } },
+        { text: "Low", scores: { support: 1, routine: 1 } },
+        { text: "All over the place", scores: { calm: 2, clarity: 1 } }
+      ]
+    },
+    {
+      text: "How easy is it to focus right now?",
+      options: [
+        { text: "Mostly fine", scores: { routine: 2 } },
+        { text: "Hard to concentrate", scores: { clarity: 3 } },
+        { text: "My mind races", scores: { calm: 2, clarity: 2 } }
+      ]
+    },
+    {
+      text: "How often have you felt tense in your body?",
+      options: [
+        { text: "Not much", scores: { routine: 2 } },
+        { text: "Sometimes", scores: { calm: 2 } },
+        { text: "A lot", scores: { calm: 3 } }
+      ]
+    },
+    {
+      text: "How connected do you feel to others lately?",
+      options: [
+        { text: "Pretty connected", scores: { routine: 2 } },
+        { text: "A little distant", scores: { support: 2 } },
+        { text: "Very alone", scores: { support: 3 } }
+      ]
+    },
+    {
       text: "What do you need most right now?",
       options: [
         { text: "Calm my body", scores: { calm: 3 } },
@@ -222,35 +215,34 @@
       options: [
         { text: "I want better habits", scores: { routine: 3 } },
         { text: "I’m overwhelmed", scores: { clarity: 2, calm: 1 } },
-        { text: "I feel alone with it", scores: { support: 3 } }
+        { text: "I feel stuck", scores: { support: 2, clarity: 1 } }
       ]
     }
   ];
 
   let index = 0;
-  let answers = []; // stores option index per question
+  let answers = [];
   let totals = { calm: 0, clarity: 0, support: 0, routine: 0 };
 
   function resetTotals() {
     totals = { calm: 0, clarity: 0, support: 0, routine: 0 };
   }
 
-  function applyScores(optionScores, mult = 1) {
+  function applyScores(optionScores) {
     Object.keys(optionScores).forEach(k => {
-      totals[k] = (totals[k] || 0) + optionScores[k] * mult;
+      totals[k] = (totals[k] || 0) + optionScores[k];
     });
   }
 
   function recomputeTotals() {
     resetTotals();
     answers.forEach((optIndex, qIndex) => {
-      const opt = questions[qIndex].options[optIndex];
-      if (opt) applyScores(opt.scores, 1);
+      const opt = questions[qIndex]?.options?.[optIndex];
+      if (opt) applyScores(opt.scores);
     });
   }
 
   function renderQuestion() {
-    // hide results
     results.hidden = true;
     quizArea.hidden = false;
 
@@ -294,15 +286,11 @@
     const contentByCat = {
       calm: {
         title: "Focus: Calm your body",
-        summary: "Your answers suggest your nervous system might be running a bit hot. A body-first reset may help.",
+        summary: "Your answers suggest your system may be running a bit hot. A body-first reset may help.",
         steps: [
-          "Use the breathing tool for 2–3 minutes (long exhale).",
+          "Use the breathing tool on the Home page for 2–3 minutes.",
           "Try grounding: name 5 things you can see.",
-          "Drink water and relax your shoulders/jaw."
-        ],
-        links: [
-          { text: "Try Quick Help", href: "mental_health.html" },
-          { text: "Explore Services", href: "services.html" }
+          "Relax shoulders + unclench jaw + slow exhale."
         ]
       },
       clarity: {
@@ -312,36 +300,24 @@
           "Write the top 3 things on your mind.",
           "Circle the one you can act on next.",
           "Make it a 5-minute task and start."
-        ],
-        links: [
-          { text: "Quick Help Tools", href: "mental_health.html" },
-          { text: "Our Services", href: "services.html" }
         ]
       },
       support: {
         title: "Focus: Feel supported",
-        summary: "Your answers suggest connection and support could help right now. You don’t have to carry this alone.",
+        summary: "Your answers suggest connection could help. You don’t have to carry this alone.",
         steps: [
           "Message one trusted person (even a short ‘hey’).",
           "If it’s serious or ongoing, consider professional support.",
           "Use quick tools while you reach out."
-        ],
-        links: [
-          { text: "Our Services", href: "services.html" },
-          { text: "Quick Help", href: "mental_health.html" }
         ]
       },
       routine: {
         title: "Focus: Build a steady routine",
         summary: "Your answers suggest you’re ready for habits that keep you balanced day-to-day.",
         steps: [
-          "Pick one small daily habit (sleep time, walk, water).",
-          "Attach it to something you already do (after brushing teeth).",
-          "Track it for 7 days — keep it tiny."
-        ],
-        links: [
-          { text: "Mental Health Basics", href: "mental_health.html#basics" },
-          { text: "Our Services", href: "services.html" }
+          "Pick one tiny daily habit (water, walk, consistent bedtime).",
+          "Attach it to something you already do.",
+          "Track it for 7 days — keep it small."
         ]
       }
     };
@@ -356,9 +332,6 @@
       <ol>
         ${result.steps.map(s => `<li>${s}</li>`).join("")}
       </ol>
-      <div style="margin-top: 10px; display:flex; gap:10px; flex-wrap:wrap;">
-        ${result.links.map(l => `<a class="btn btn-small ${l.href.includes("services") ? "btn-outline" : ""}" href="${l.href}">${l.text}</a>`).join("")}
-      </div>
     `;
 
     quizArea.hidden = true;
