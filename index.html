@@ -1,88 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Resilience Room</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login or Signup</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
-<body data-page="home">
-  <div class="glass-container">
+<body data-page="login">
+    <div class="glass-container">
+        <header>
+            <h1>Join the Resilience Room</h1>
+            <p id="form-title">Login to your account.</p>
+        </header>
 
-    <nav>
-      <ul>
-        <li><a class="nav-link" href="index.html">Home</a></li>
-        <li><a class="nav-link" href="quiz.html">Quiz</a></li>
-        <li class="dropdown">
-          <a class="nav-link dropbtn" href="javascript:void(0)">Info</a>
-          <div class="dropdown-content">
-            <a href="mental_health.html">Mental Health</a>
-            <a href="services.html">Our Services</a>
-          </div>
-        </li>
-        <li><a class="nav-link" href="login.html">Login</a></li>
-      </ul>
-    </nav>
+        <section class="info-card">
+            <!-- Login Form -->
+            <form id="login-form" action="#" method="POST">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
 
-    <header>
-      <h1>The Resilience Room</h1>
-      <p>Welcome to the Resilience.</p>
-    </header>
+            <!-- Signup Form (Hidden initially) -->
+            <form id="signup-form" action="#" method="POST" style="display: none;">
+                <div class="form-group">
+                    <label for="new-email">Email Address</label>
+                    <input type="email" id="new-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">Create Password</label>
+                    <input type="password" id="new-password" name="password" required>
+                </div>
+                <button type="submit" class="btn">Sign Up</button>
+            </form>
 
-    <section class="info-card">
+            <div class="form-actions">
+                <a href="#" id="toggle-form">Don't have an account? Sign Up</a>
+            </div>
+        </section>
 
-      <!-- Breathing Tool (NO dropdown ✅) -->
-      <div class="breathing-section" data-breathing>
-        <h2 class="tool-title">Take a moment</h2>
+        <footer>
+            <p>&copy; 2026 Miles Pirodon</p>
+        </footer>
+    </div>
 
-        <div class="circle" aria-hidden="true"></div>
-        <p id="breath-text" class="breath-text">Breathe In...</p>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabaseClient.js"></script>
 
-        <p class="tiny-note">
-          Just need a moment? Try this first — then choose your next step below.
-        </p>
-      </div>
-
-      <h2>Who are we?</h2>
-      <p>
-        Our company, <strong>The Resilience Room</strong>, is determined to help individuals and families
-        move from a state of overwhelm to one of clarity and strength.
-      </p>
-
-      <p class="soft-line">You don’t need to have everything figured out to start.</p>
-
-      <div class="cta-row">
-        <a href="mental_health.html" class="btn">Explore More</a>
-        <a href="quiz.html" class="btn btn-outline">Take the Quiz</a>
-      </div>
-
-      <p class="form-actions"><a href="login.html">Login/Signup</a></p>
-
-      <div class="disclaimer">
-        <p>
-          This website supports wellbeing, but it is not a substitute for professional care.
-          If you feel unsafe or in immediate danger, contact emergency services.
-        </p>
-      </div>
-
-      <div class="next-step">
-        <h3>Your Next Step</h3>
-        <p>Not sure where to start? Pick one small step — that’s enough for today.</p>
-        <div class="next-step-actions">
-          <a href="quiz.html" class="btn btn-small">1-Minute Quiz</a>
-          <a href="mental_health.html" class="btn btn-small btn-outline">Quick Help</a>
-          <a href="services.html" class="btn btn-small btn-outline">Explore Services</a>
-        </div>
-      </div>
-
-    </section>
-
-    <footer>
-      <p>&copy; 2026 Miles Pirodon</p>
-    </footer>
-  </div>
-
-  <script src="app.js"></script>
+    <!-- Your app -->
+    <script src="app.js"></script>
 </body>
 </html>
