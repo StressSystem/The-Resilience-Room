@@ -470,3 +470,32 @@ footer { margin-top: 30px; font-size: 0.85rem; opacity: 0.85; }
   }
 }
 
+/* ==========================
+   Quiz results spacing fix
+========================== */
+
+#quiz-results {
+  padding-left: 12px;
+  padding-right: 4px;
+}
+
+/* Nudge result card right */
+.result-card {
+  margin-left: 12px;
+  margin-right: 6px;
+}
+
+/* On mobile, keep it centered but spaced */
+@media (max-width: 480px) {
+  #quiz-results {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .result-card {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+
