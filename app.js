@@ -117,6 +117,10 @@
 
   if (!toggleLink || !loginForm || !signupForm || !formTitle) return;
 
+  // Ensure initial state matches your HTML (login visible, signup hidden)
+  if (!loginForm.style.display) loginForm.style.display = "block";
+  if (!signupForm.style.display) signupForm.style.display = "none";
+
   toggleLink.addEventListener("click", function (event) {
     event.preventDefault();
 
@@ -353,4 +357,73 @@
   });
 
   renderQuestion();
+})();
+
+/* ==========================
+   Supabase auth (login.html)
+   - keeps your UI the same
+   - makes forms actually work
+========================== */
+(function supabaseAuth() {
+  // Only runs on the login page where the forms exist
+  const loginForm = document.getElementById("login-form");
+  const signupForm = document.getElementById("signup-form");
+  if (!loginForm || !signupForm) return;
+
+  const sb = window.supabaseClient;
+  if (!sb) {
+    console.warn("Supabase client not found. Make sure supabase-js + supabaseClient.js are loaded on login.html");
+    return;
+  }
+
+  // Create (or reuse) a message area without changing your layout
+  let msg = document.getElementById("auth-msg");
+  if (!msg) {
+    msg = document.createElement("p");
+    msg.id = "auth-msg";
+    msg.className = "hint";
+    msg.style.marginTop = "10px";
+    signupForm.insertAdjacentElement("afterend", msg);
+  }
+
+  function setMsg(text) {
+    msg.textContent = text || "";
+  }
+
+  // LOGIN
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    setMsg("Logging in...");
+
+    const email = document.getElementById("email")?.value?.trim();
+    const password = document.getElementById("password")?.value;
+
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      setMsg(error.message);
+      return;
+    }
+
+    setMsg("Logged in!");
+    window.location.href = "index.html";
+  });
+
+  // SIGNUP
+  signupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    setMsg("Creating account...");
+
+    const email = document.getElementById("new-email")?.value?.trim();
+    const password = document.getElementById("new-password")?.value;
+
+    const { error } = await sb.auth.signUp({ email, password });
+
+    if (error) {
+      setMsg(error.message);
+      return;
+    }
+
+    setMsg("Account created! You can log in now.");
+  });
 })();
